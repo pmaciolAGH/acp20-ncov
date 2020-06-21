@@ -129,14 +129,16 @@ public:
 	void make_iteration() {
 		print();
 		new_board = create_board(size);
+		auto check_cell = [this](int i, int j) {
+			const T neighborhood(last_board, i, j);
+			if (neighborhood.check_cell()) new_board.cells.get()[0][i][j] = true;
+		};
 		#pragma omp parallel for num_threads(4) schedule(static) 
 		for (int i = 0; i < size; i++) {
 		#pragma omp critical
 			std::cout << omp_get_thread_num() << std::endl;
-			const T neighborhood(last_board, i, 0);
 			for (int j = 0; j < size; j++) {
-				neighborhood.change_cells(last_board, i, j);
-				if (neighborhood.check_cell()) new_board.cells.get()[0][i][j] = true;
+				check_cell(i, j);
 			}
 		}
 		#pragma omp barrier
@@ -144,10 +146,13 @@ public:
 	}
 
 	void print() {
+		auto print_cell = [this](int i, int j) {
+			if (last_board.cells.get()[0][i][j]) std::cout << "1 ";
+			else std::cout << "0 ";
+		};
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				if (last_board.cells.get()[0][i][j]) std::cout << "1 ";
-				else std::cout << "0 ";
+				print_cell(i, j);
 			}
 			std::cout << std::endl;
 		}
