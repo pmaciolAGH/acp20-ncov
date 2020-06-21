@@ -1,13 +1,13 @@
 // AdvancedCpp.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
 #include <iostream>
 #include <windows.h>
 #include <fstream>
 #include <memory>
 #include <omp.h>
 #include <stdio.h>
+
 
 
 class Board {
@@ -157,7 +157,6 @@ public:
 		std::fstream file;
 		int i, j;
 		file.open(filename);
-		if (!file.is_open()) throw std::exception("Couldn't open file");
 		while (!file.eof()) {
 		file >> i >> j;
 		last_board.cells.get()[0][i][j] = true;
@@ -201,13 +200,8 @@ void move_semantics_test() {
 int main()
 {
 	Game<MooreNeighborhood> game(8);
-	try {
-		game.initialize("data.txt");
-		game.run(10);
-	}
-	catch (std::exception& ex) {
-		std::cout << ex.what() << std::endl;
-	}
+	game.initialize("data.txt");
+	game.run(10);
 	//move_semantics_test();
 	system("PAUSE");
 	return 0;
